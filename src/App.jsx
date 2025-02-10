@@ -7,8 +7,8 @@ function App() {
     <Router>
       <Routes>
         <Route element={<PrivateRoutes />}>
-          <Route path="/" element={<div>Welcome User!</div>}/>
-          <Route path="/app" element={<div>Chat App</div>}/>
+          <Route path="/" element={<Navigate to='/app' />} />
+          <Route path="/app" element={<div>Chat App</div>} />
         </Route>
 
         <Route path="/login" element={<Login />}/>
