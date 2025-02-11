@@ -25,29 +25,33 @@ export function SignupForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={props.handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input id="email" type="email" placeholder="m@example.com" required value={props.credentials.email}
+          onChange={(e) => props.setCredentials({ ...props.credentials, email: e.target.value })}/>
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" required  value={props.credentials.password}
+          onChange={(e) => props.setCredentials({ ...props.credentials, password: e.target.value })}/>
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password_confirmation">Retype Password</Label>
+                  <Label htmlFor="password_confirmation">Confirm Password</Label>
                 </div>
-                <Input id="password_confirmation" type="password" required />
+                <Input id="password_confirmation" type="password" required  value={props.credentials.password_confirmation}
+          onChange={(e) => props.setCredentials({ ...props.credentials, password_confirmation: e.target.value })}/>
               </div>
               <Button type="submit" className="w-full">
                 Register
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
+              Already have an account?{" "}
               <Link to='/login' className="underline underline-offset-4">
                 Login
               </Link> {" "}

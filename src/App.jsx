@@ -1,15 +1,16 @@
-import { BrowserRouter, HashRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes, Navigate, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import useLogin from "./hooks/useLogin";
 import Page from "./app/dashboard/page";
 
-// Use HashRouter for GitHub Pages, BrowserRouter for Vite (without basename)
-const Router = import.meta.env.MODE === "development" ? BrowserRouter : HashRouter;
+// Automatically use HashRouter for GitHub Pages, BrowserRouter for local dev
+const isDev = import.meta.env.MODE === "development";
+const RouterComponent = isDev ? BrowserRouter : HashRouter;
 
 function App() {
   return (
-    <Router>
+    <RouterComponent basename="/slack-clone">
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<Navigate to="/app" />} />
@@ -18,7 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
-    </Router>
+    </RouterComponent>
   );
 }
 
