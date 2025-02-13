@@ -19,15 +19,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
-  const [activeItem, setActiveItem] = useState("Users");
   const user = JSON.parse(localStorage.getItem("user"));
   const headers = JSON.parse(localStorage.getItem("headers"));
+
+  const [activeItem, setActiveItem] = useState("Users");
   const [users, setUsers] = useState([]);
   const [channels, setChannels] = useState([]);
-  const endElement = useRef(null);
   const [id, setId] = useState(null);
   const [name, setName] = useState(user.email);
   const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  
+  const endElement = useRef(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -65,10 +68,10 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if(id){
-      const type = activeItem === "Users" ? "User" : "Channel"
-      const api = `https://slack-api.replit.app/api/v1/messages?receiver_id=${id}&receiver_class=${type}`
-
+    if (id) {
+      const type = activeItem === "Users" ? "User" : "Channel";
+      const api = `https://slack-api.replit.app/api/v1/messages?receiver_id=${id}&receiver_class=${type}`;
+  
       async function fetchMessages() {
         try {
           const response = await fetch(api, {
@@ -78,25 +81,19 @@ export default function Page() {
             },
           });
           const data = await response.json();
-          setMessages(data.data); 
+          setMessages(data.data);
         } catch (error) {
-          console.error("Error fetching channels:", error);
+          console.error("Error fetching messages:", error);
         }
       }
-
-      if(activeItem === "Users"){
-        const userName = users.data.find(user => user.id === id).email;
-        setName(userName);
-      }
-
-      if(activeItem === "Channels"){
-        const channelName = channels.data.find(channel => channel.id === id).name;
-        setName(channelName);
-      }
-
+  
       fetchMessages();
+      const interval = setInterval(fetchMessages, 100000);
+  
+      return () => clearInterval(interval);
     }
-  }, [id])
+  }, [id]); 
+  
 
   useEffect(() => {
     if (endElement.current) {
@@ -104,6 +101,35 @@ export default function Page() {
     }
     
   }, [messages])
+
+  async function handleSend(){
+      if(id === null || message === ''){
+        return
+      }
+    
+      const requestBody = {
+        "receiver_id": id,
+        "receiver_class": activeItem === "Users" ? "User" : "Channel",
+        "body": message
+      }
+
+      console.log(requestBody);
+      
+      try {
+        const response = await fetch("https://slack-api.replit.app/api/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            ...headers,
+          },
+          body: JSON.stringify(requestBody)
+        });
+        const data = await response.json();
+        console.log(data)
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+  }
 
   return (
     <SidebarProvider
@@ -126,13 +152,13 @@ export default function Page() {
           <h1>{name}</h1>
         </header>
         <ScrollArea className="p-4 flex-grow">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {messages.map((message) => (
-              <div key={message.id} className={`${message.sender.id === user.id ? 
-                "self-end text-right" : "self-start"}`
+              <div key={message.id} className={`flex flex-col ${message.sender.id === user.id ? 
+                "self-end items-end" : "self-start"}`
               }>
                 <span className="text-sm">{message.sender.uid}</span>
-                <div className="rounded-md bg-slate-600 text-white mb-4 p-2 w-max">{message.body}</div>
+                <div className="rounded-md bg-slate-600 text-white px-2 py-1 w-max max-w-[300px] break-words">{message.body}</div>
               </div>
             ))}
             <div ref={endElement}></div>
@@ -140,8 +166,11 @@ export default function Page() {
         </ScrollArea>
 
         <div className="flex gap-4 p-4 pt-0">
-          <Input />
-          <Button>Send</Button>
+          <Input value={message} onChange={(e) => setMessage(e.target.value)} />
+          <Button onClick={() => {
+            handleSend();
+            setMessage("");
+          }}>Send</Button>
         </div>
       </SidebarInset>
     </SidebarProvider>
