@@ -10,7 +10,7 @@ const RouterComponent = isDev ? BrowserRouter : HashRouter;
 
 function App() {
   return (
-    <RouterComponent basename="/slack-clone">
+    <RouterComponent>
       <Routes>
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<Navigate to="/app" />} />
