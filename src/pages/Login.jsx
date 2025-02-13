@@ -29,20 +29,23 @@ export default function Login() {
       const uid = res.headers.get("uid");
 
       const headers = {
-        accessToken,
+        "access-token": accessToken,
         client,
         expiry,
         uid,
       };
 
+      const user = {email: data.data.email, id: data.data.id}
+
       localStorage.setItem("headers", JSON.stringify(headers));
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/");
     } else {
         alert(data.errors[0])
     }
   }
 
-  return !auth.token ? (
+  return (
     <div className="max-w-sm w-[24rem] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <LoginForm
         onSubmit={handleSubmit}
@@ -50,7 +53,5 @@ export default function Login() {
         setCredentials={setCredentials}
       />
     </div>
-  ) : (
-    <Navigate to="/" />
   );
 }

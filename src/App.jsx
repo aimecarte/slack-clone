@@ -16,8 +16,11 @@ function App() {
           <Route path="/" element={<Navigate to="/app" />} />
           <Route path="/app" element={<Page />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
       </Routes>
     </RouterComponent>
   );
@@ -26,6 +29,11 @@ function App() {
 function PrivateRoutes() {
   let auth = useLogin();
   return auth.token ? <Outlet /> : <Navigate to="/login" />;
+}
+
+function ProtectedRoutes() {
+  let auth = useLogin();
+  return auth.token ? <Navigate to="/" /> : <Outlet />;
 }
 
 export default App;
