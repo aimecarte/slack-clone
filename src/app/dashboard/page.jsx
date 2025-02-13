@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState } from "react";
+import { Plus } from "lucide-react";
 
 export default function Page() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -89,7 +90,16 @@ export default function Page() {
   
       fetchMessages();
       const interval = setInterval(fetchMessages, 100000);
-  
+
+      if(activeItem === "Users"){
+        const userName = users.data.find(user => user.id === id).email;
+        setName(userName);
+      }
+
+      if(activeItem === "Channels"){
+        const channelName = channels.data.find(channel => channel.id === id).name;
+        setName(channelName);
+      }
       return () => clearInterval(interval);
     }
   }, [id]); 
@@ -131,6 +141,7 @@ export default function Page() {
       }
   }
 
+
   return (
     <SidebarProvider
       style={{
@@ -150,6 +161,7 @@ export default function Page() {
         <header className="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
           <SidebarTrigger className="-ml-1" />
           <h1>{name}</h1>
+          {(activeItem === "Channels" && id !== null) && <Plus className="ml-auto" />}
         </header>
         <ScrollArea className="p-4 flex-grow">
           <div className="flex flex-col gap-4">

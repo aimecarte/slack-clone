@@ -99,6 +99,7 @@ export function AppSidebar({
                     onClick={() => {
                       setActiveItem("Users");
                       setSearch("");
+                      setId(null);
                       setOpen(true);
                     }}
                     isActive={activeItem === "Users"}
@@ -117,6 +118,7 @@ export function AppSidebar({
                     onClick={() => {
                       setActiveItem("Channels");
                       setSearch("");
+                      setId(null);
                       setOpen(true);
                     }}
                     isActive={activeItem === "Channels"}
