@@ -30,7 +30,18 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
+
 import { Switch } from "@/components/ui/switch";
+import { useNavigate } from "react-router-dom";
 
 // This is sample data
 
@@ -42,19 +53,44 @@ export function AppSidebar({
   channels,
   id,
   setId,
+  setMessages,
+  setName,
+  headers,
   ...props
 }) {
   // Note: I'm using state to show active item.
   // IRL you should use the url/router.
   const { setOpen } = useSidebar();
   const [search, setSearch] = React.useState("");
+  const channelNameRef = React.useRef(null);
+  const navigate = useNavigate();
 
   const filteredUsers =
     search.length > 0
-      ? users.data.filter(({ email, id }) => {
+      ? users.data?.filter(({ email, id }) => {
           return [email, id].join("").includes(search.toLowerCase());
         })
       : [];
+
+  function handleAddNewChannel() {
+    const channelName = channelNameRef.current.value;
+
+    fetch("https://slack-api.replit.app/api/v1/channels", {
+      method: "POST",
+      body: JSON.stringify({
+        name: channelName,
+        user_ids: []
+      }),
+      headers: {
+        "Content-type": "application/json",
+        ...headers,
+      }
+    })
+
+    navigate('/')
+
+    console.log("Hello");
+  } 
 
   return (
     <Sidebar
@@ -100,6 +136,8 @@ export function AppSidebar({
                       setActiveItem("Users");
                       setSearch("");
                       setId(null);
+                      setMessages([]);
+                      setName("");
                       setOpen(true);
                     }}
                     isActive={activeItem === "Users"}
@@ -119,6 +157,8 @@ export function AppSidebar({
                       setActiveItem("Channels");
                       setSearch("");
                       setId(null);
+                      setMessages([]);
+                      setName("");
                       setOpen(true);
                     }}
                     isActive={activeItem === "Channels"}
@@ -155,8 +195,32 @@ export function AppSidebar({
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {activeItem === "Channels"  &&
-                channels.data?.map((channel) => (
+              {activeItem === "Channels"  && (
+                <>
+                <Dialog>
+                  <DialogTrigger asChild><Button className="w-full">Create a new channel</Button></DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create a channel</DialogTitle>
+                      <DialogDescription>
+                        Enter the name of your new channel
+                      </DialogDescription>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="channelName" className="text-right">
+                            Name
+                          </Label>
+                          <Input id="channelName" ref={channelNameRef} className="col-span-3" />
+                        </div>
+                      </div>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button type="submit" onClick={handleAddNewChannel}>Add</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                  
+                  {channels.data?.map((channel) => (
                   <a
                     href="#"
                     key={channel.id}
@@ -171,9 +235,12 @@ export function AppSidebar({
                       <span className="ml-auto text-xs"></span>
                     </div>
                   </a>
-                ))}
+                  ))}
+                </>
+              )
+                }
               {(activeItem === "Users" || search.length > 0) &&
-                  filteredUsers.map((user) => (
+                  filteredUsers?.map((user) => (
                     <a
                       href="#"
                       key={user.id}

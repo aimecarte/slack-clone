@@ -6,7 +6,7 @@ import Page from "./app/dashboard/page";
 
 // Automatically use HashRouter for GitHub Pages, BrowserRouter for local dev
 const isDev = import.meta.env.MODE === "development";
-const RouterComponent = isDev ? BrowserRouter : HashRouter;
+const RouterComponent = BrowserRouter;
 
 function App() {
   return (
