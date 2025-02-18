@@ -13,6 +13,9 @@ import { Link } from "react-router-dom"
 
 export function SignupForm({
   className,
+  credentials,
+  setCredentials,
+  handleSubmit,
   ...props
 }) {
   return (
@@ -25,26 +28,26 @@ export function SignupForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={props.handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required value={props.credentials.email}
-          onChange={(e) => props.setCredentials({ ...props.credentials, email: e.target.value })}/>
+                <Input id="email" type="email" placeholder="m@example.com" required value={credentials.email}
+          onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}/>
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required  value={props.credentials.password}
-          onChange={(e) => props.setCredentials({ ...props.credentials, password: e.target.value })}/>
+                <Input id="password" type="password" required  value={credentials.password}
+          onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}/>
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password_confirmation">Confirm Password</Label>
                 </div>
-                <Input id="password_confirmation" type="password" required  value={props.credentials.password_confirmation}
-          onChange={(e) => props.setCredentials({ ...props.credentials, password_confirmation: e.target.value })}/>
+                <Input id="password_confirmation" type="password" required  value={credentials.password_confirmation}
+          onChange={(e) => setCredentials({ ...credentials, password_confirmation: e.target.value })}/>
               </div>
               <Button type="submit" className="w-full">
                 Register

@@ -22,7 +22,7 @@ export default function Login() {
     );
     const data = await res.json();
 
-    if (res.ok) {
+    if (!data.hasOwnProperty('errors')) {
       const accessToken = res.headers.get("access-token");
       const client = res.headers.get("client");
       const expiry = res.headers.get("expiry");
@@ -39,10 +39,12 @@ export default function Login() {
 
       localStorage.setItem("headers", JSON.stringify(headers));
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/");
+    navigate("/");
     } else {
         alert(data.errors[0])
     }
+
+    
   }
 
   return (

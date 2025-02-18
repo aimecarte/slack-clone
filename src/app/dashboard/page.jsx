@@ -32,6 +32,7 @@ import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import moment from "moment/moment";
 import { useNavigate } from "react-router-dom";
+import { fetchUserChannels, fetchUsers } from "../../lib/api";
 
 
 export default function Page() {
@@ -51,36 +52,89 @@ export default function Page() {
 
   const endElement = useRef(null);
 
+  // async function fetchUsers() {
+  //   try {
+  //     const response = await fetch(
+  //       "https://slack-api.replit.app/api/v1/users",
+  //       {
+  //         headers: {
+  //           "Content-type": "application/json",
+  //           ...headers,
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     if(data.hasOwnProperty('errors')){
+  //         if(data.errors[0] === "You need to sign in or sign up before continuing."){
+  //         localStorage.clear();
+  //         navigate('/login');
+  //       }
+  //     }
+  //     setUsers(data);
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  // }
+
+  // async function fetchUserChannels() {
+  //   try {
+  //     const response = await fetch(
+  //       "https://slack-api.replit.app/api/v1/channels",
+  //       {
+  //         headers: {
+  //           "Content-type": "application/json",
+  //           ...headers,
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     if(data.hasOwnProperty('errors')){
+  //       if(data.errors[0] === "You need to sign in or sign up before continuing."){
+  //       localStorage.clear();
+  //       navigate('/login');
+  //     }
+  //   }
+  //     setChannels(data);
+  //   } catch (error) {
+  //     console.error("Error fetching channels:", error);
+  //   }
+  // }
+
   useEffect(() => {
     if(users.length > 0 || channels.length > 0) {return}
 
-    async function fetchUsers() {
-      try {
-        const response = await fetch(
-          "https://slack-api.replit.app/api/v1/users",
-          {
-            headers: {
-              "Content-type": "application/json",
-              ...headers,
-            },
-          }
-        );
-        const data = await response.json();
-        if(data.hasOwnProperty('errors')){
-            if(data.errors[0] === "You need to sign in or sign up before continuing."){
-            localStorage.clear();
-            navigate('/login');
-          }
-        }
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
+    async function getUserDetails(){
+      const x = await fetchUsers();
+      const y = await fetchUserChannels();
+
+      // console.log(x, y)
+      //       if(x.hasOwnProperty('errors')){
+      //     if(x.errors[0] === "You need to sign in or sign up before continuing."){
+      //     localStorage.clear();
+      //     navigate('/login');
+      //   }
+      // }
+      
+      setUsers(x);
+      setChannels(y);
     }
 
-    fetchUsers();
-    fetchUserChannels();
+    getUserDetails();
   }, [activeItem]);
+
+  useEffect(() => {
+    if(users.length > 0 || channels.length > 0) {return}
+
+    async function getUserDetails(){
+      const x = await fetchUsers();
+      const y = await fetchUserChannels();
+      
+      setUsers(x);
+      setChannels(y);
+    }
+
+    getUserDetails();
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -195,29 +249,7 @@ export default function Page() {
     }
   }
 
-  async function fetchUserChannels() {
-    try {
-      const response = await fetch(
-        "https://slack-api.replit.app/api/v1/channels",
-        {
-          headers: {
-            "Content-type": "application/json",
-            ...headers,
-          },
-        }
-      );
-      const data = await response.json();
-      if(data.hasOwnProperty('errors')){
-        if(data.errors[0] === "You need to sign in or sign up before continuing."){
-        localStorage.clear();
-        navigate('/login');
-      }
-    }
-      setChannels(data);
-    } catch (error) {
-      console.error("Error fetching channels:", error);
-    }
-  }
+  
 
   async function handleAddUser() {
     const numMembersArray = membersArray.map((u) => u.id);
